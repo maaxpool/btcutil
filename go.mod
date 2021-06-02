@@ -1,4 +1,4 @@
-module github.com/btcsuite/btcutil
+module github.com/maaxpool/btcutil
 
 go 1.14
 
