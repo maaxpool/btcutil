@@ -18,37 +18,48 @@ import (
 // reason.
 func TestBech32(t *testing.T) {
 	tests := []struct {
+    codec         Codec
 		str           string
 		expectedError error
 	}{
-		{"A12UEL5L", nil},
-		{"an83characterlonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1tt5tgs", nil},
-		{"abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw", nil},
-		{"11qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqc8247j", nil},
-		{"split1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", nil},
-		{"split1checkupstagehandshakeupstreamerranterredcaperred2y9e2w", ErrInvalidChecksum{"2y9e3w", "2y9e2w"}},              // invalid checksum
-		{"s lit1checkupstagehandshakeupstreamerranterredcaperredp8hs2p", ErrInvalidCharacter(' ')},                            // invalid character (space) in hrp
-		{"spl\x7Ft1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", ErrInvalidCharacter(127)},                         // invalid character (DEL) in hrp
-		{"split1cheo2y9e2w", ErrNonCharsetChar('o')},                                                                          // invalid character (o) in data part
-		{"split1a2y9w", ErrInvalidSeparatorIndex(5)},                                                                          // too short data part
-		{"1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", ErrInvalidSeparatorIndex(0)},                              // empty hrp
-		{"11qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqc8247j", ErrInvalidLength(91)}, // too long
+		{ BECH32Enc, "A12UEL5L", nil},
+		{ BECH32Enc, "an83characterlonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1tt5tgs", nil},
+		{ BECH32Enc, "abcdef1qpzry9x8gf2tvdw0s3jn54khce6mua7lmqqqxw", nil},
+		{ BECH32Enc, "11qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqc8247j", nil},
+		{ BECH32Enc, "split1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", nil},
+		{ BECH32Enc, "split1checkupstagehandshakeupstreamerranterredcaperred2y9e2w", ErrInvalidChecksum{"2y9e3w", "2y9e2w"}},              // invalid checksum
+		{ BECH32Enc, "s lit1checkupstagehandshakeupstreamerranterredcaperredp8hs2p", ErrInvalidCharacter(' ')},                            // invalid character (space) in hrp
+		{ BECH32Enc, "spl\x7Ft1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", ErrInvalidCharacter(127)},                         // invalid character (DEL) in hrp
+		{ BECH32Enc, "split1cheo2y9e2w", ErrNonCharsetChar('o')},                                                                          // invalid character (o) in data part
+		{ BECH32Enc, "split1a2y9w", ErrInvalidSeparatorIndex(5)},                                                                          // too short data part
+		{ BECH32Enc, "1checkupstagehandshakeupstreamerranterredcaperred2y9e3w", ErrInvalidSeparatorIndex(0)},                              // empty hrp
+		{ BECH32Enc, "11qqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqsqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqqc8247j", ErrInvalidLength(91)}, // too long
 
 		// Additional test vectors used in bitcoin core
-		{" 1nwldj5", ErrInvalidCharacter(' ')},
-		{"\x7f" + "1axkwrx", ErrInvalidCharacter(0x7f)},
-		{"\x801eym55h", ErrInvalidCharacter(0x80)},
-		{"an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx", ErrInvalidLength(91)},
-		{"pzry9x0s0muk", ErrInvalidSeparatorIndex(-1)},
-		{"1pzry9x0s0muk", ErrInvalidSeparatorIndex(0)},
-		{"x1b4n0q5v", ErrNonCharsetChar(98)},
-		{"li1dgmt3", ErrInvalidSeparatorIndex(2)},
-		{"de1lg7wt\xff", ErrInvalidCharacter(0xff)},
-		{"A1G7SGD8", ErrInvalidChecksum{"2uel5l", "g7sgd8"}},
-		{"10a06t8", ErrInvalidLength(7)},
-		{"1qzzfhee", ErrInvalidSeparatorIndex(0)},
-		{"a12UEL5L", ErrMixedCase{}},
-		{"A12uEL5L", ErrMixedCase{}},
+		{ BECH32Enc, " 1nwldj5", ErrInvalidCharacter(' ')},
+		{ BECH32Enc, "\x7f" + "1axkwrx", ErrInvalidCharacter(0x7f)},
+		{ BECH32Enc, "\x801eym55h", ErrInvalidCharacter(0x80)},
+		{ BECH32Enc, "an84characterslonghumanreadablepartthatcontainsthenumber1andtheexcludedcharactersbio1569pvx", ErrInvalidLength(91)},
+		{ BECH32Enc, "pzry9x0s0muk", ErrInvalidSeparatorIndex(-1)},
+		{ BECH32Enc, "1pzry9x0s0muk", ErrInvalidSeparatorIndex(0)},
+		{ BECH32Enc, "x1b4n0q5v", ErrNonCharsetChar(98)},
+		{ BECH32Enc, "li1dgmt3", ErrInvalidSeparatorIndex(2)},
+		{ BECH32Enc, "de1lg7wt\xff", ErrInvalidCharacter(0xff)},
+		{ BECH32Enc, "A1G7SGD8", ErrInvalidChecksum{"2uel5l", "g7sgd8"}},
+		{ BECH32Enc, "10a06t8", ErrInvalidLength(7)},
+		{ BECH32Enc, "1qzzfhee", ErrInvalidSeparatorIndex(0)},
+		{ BECH32Enc, "a12UEL5L", ErrMixedCase{}},
+		{ BECH32Enc, "A12uEL5L", ErrMixedCase{}},
+
+    // BECH32M test vectors
+    { BECH32MEnc, "A1LQFN3A", nil },
+    { BECH32MEnc, "a1lqfn3a", nil },
+    { BECH32MEnc, "an83characterlonghumanreadablepartthatcontainsthetheexcludedcharactersbioandnumber11sg7hg6", nil},
+    { BECH32MEnc, "abcdef1l7aum6echk45nj3s0wdvt2fg8x9yrzpqzd3ryx", nil},
+    { BECH32MEnc, "11llllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllllludsr8", nil},
+    { BECH32MEnc, "split1checkupstagehandshakeupstreamerranterredcaperredlc445v", nil},
+    { BECH32MEnc, "?1v759aa", nil},
+
 	}
 
 	for i, test := range tests {
@@ -66,7 +77,7 @@ func TestBech32(t *testing.T) {
 		}
 
 		// Check that it encodes to the same string
-		encoded, err := Encode(hrp, decoded)
+		encoded, err := Encode(test.codec, hrp, decoded)
 		if err != nil {
 			t.Errorf("encoding failed: %v", err)
 		}
@@ -137,7 +148,7 @@ func TestMixedCaseEncode(t *testing.T) {
 				err)
 			continue
 		}
-		gotEncoded, err := Encode(test.hrp, convertedData)
+		gotEncoded, err := Encode(BECH32Enc, test.hrp, convertedData)
 		if err != nil {
 			t.Errorf("%q: unexpected encode error: %v", test.name, err)
 			continue
@@ -315,7 +326,7 @@ func TestBech32Base256(t *testing.T) {
 		// Encode the same data with the HRP converted to all uppercase and
 		// ensure the result is the lowercase version of the original encoded
 		// bech32 string.
-		gotEncoded, err := EncodeFromBase256(strings.ToUpper(test.hrp), data)
+		gotEncoded, err := EncodeFromBase256(BECH32Enc, strings.ToUpper(test.hrp), data)
 		if err != nil {
 			t.Errorf("%q: unexpected uppercase HRP encode error: %v", test.name,
 				err)
@@ -329,7 +340,7 @@ func TestBech32Base256(t *testing.T) {
 		// Encode the same data with the HRP converted to all lowercase and
 		// ensure the result is the lowercase version of the original encoded
 		// bech32 string.
-		gotEncoded, err = EncodeFromBase256(strings.ToLower(test.hrp), data)
+		gotEncoded, err = EncodeFromBase256(BECH32Enc, strings.ToLower(test.hrp), data)
 		if err != nil {
 			t.Errorf("%q: unexpected lowercase HRP encode error: %v", test.name,
 				err)
@@ -350,7 +361,7 @@ func TestBech32Base256(t *testing.T) {
 			}
 			mixedHRPBuilder.WriteRune(r)
 		}
-		gotEncoded, err = EncodeFromBase256(mixedHRPBuilder.String(), data)
+		gotEncoded, err = EncodeFromBase256(BECH32Enc, mixedHRPBuilder.String(), data)
 		if err != nil {
 			t.Errorf("%q: unexpected lowercase HRP encode error: %v", test.name,
 				err)
@@ -396,7 +407,7 @@ func BenchmarkEncodeDecodeCycle(b *testing.B) {
 	b.ReportAllocs()
 	b.ResetTimer()
 	for i := 0; i < b.N; i++ {
-		str, err := Encode(hrp, base32Input)
+		str, err := Encode(BECH32Enc, hrp, base32Input)
 		if err != nil {
 			b.Fatalf("failed to encode input: %v", err)
 		}

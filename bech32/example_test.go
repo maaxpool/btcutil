@@ -36,7 +36,7 @@ func ExampleEncode() {
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
-	encoded, err := bech32.Encode("customHrp!11111q", conv)
+	encoded, err := bech32.Encode(bech32.BECH32Enc, "customHrp!11111q", conv)
 	if err != nil {
 		fmt.Println("Error:", err)
 	}
